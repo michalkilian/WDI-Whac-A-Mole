@@ -13,7 +13,7 @@ green = (0,255,0)
 darkGreen = (25,160,60)
 red = (255,0,0)
 blue = (0,0,255)
-maps = ["background.png","background2.png","background3.png"]
+maps = ["background.png","background2.png","background3.jpg"]
 mapsHoles = [9,3,11]
 
 gameFolder = os.path.dirname(__file__)
@@ -39,6 +39,7 @@ menuCursor = Cursor(os.path.join(imgFolder, "cursor.png"))
 cursors.add(hammer,hammer_hit,menuCursor)
 
 mole = Mole(os.path.join(imgFolder,"mole.png"))
+moleHit = Mole(os.path.join(imgFolder,"moleHit.png"))
 
 menuBackground = Background(os.path.join(imgFolder,"menu.jpg"))
 optionsBacground = Background(os.path.join(imgFolder,"options.png"))
@@ -56,6 +57,7 @@ backButton = Buttons(100,57,338,375)
 playAgainButton = Buttons(140,75,313,268)
 returnToMenuButton = Buttons(140,75,313,375)
 
+
 #defining screen messages
 def screenMessage(msg, color,mWidtg, mHeight):
     screen_text = font.render(msg, True, color)
@@ -66,7 +68,7 @@ def gameLoop():
 
     #in game variables
     chosenMap = 0
-    holes = [[(160,105),(375,105),(580,105),(160,260),(378,260),(580,260),(160,400),(385,405),(593,407)],[(160,105),(580,105),(385,405)],[(),(),(),(),(),(),(),(),(),(),()]]
+    holes = [[(175,138),(390,138),(620,138),(175,270),(390,270),(620,270),(175,400),(390,405),(615,405)],[(175,138),(620,138),(390,405)],[(130,130),(310,130),(495,130),(690,130),(210,295),(410,295),(603,295),(130,440),(310,440),(505,440),(695,440)]]
 
     gameExit = False
     isMenu = True
@@ -83,6 +85,7 @@ def gameLoop():
 
     mousePosition = (width/2,height/2)
     pressedTime = 10
+    moleHitAnimation = 30
 
     isMusicPlaying = False
 
@@ -208,6 +211,8 @@ def gameLoop():
                     pressedTime = 0
                     hit = pygame.sprite.spritecollide(mole,cursors,False)
                     if hit and moleTime<maxMoleTime:
+                        moleHit.update(holes[chosenMap][moleHole])
+                        moleHitAnimation=0
                         score +=1
                         moleTime = maxMoleTime
                         isMoleHitted = True
@@ -224,7 +229,7 @@ def gameLoop():
             if(moleTime>=maxMoleTime):
                 if isMoleHitted==False:
                     lives-=1
-                moleTime = -50
+                moleTime = -1*maxMoleTime
                 moleHole = random.randint(0,mapsHoles[chosenMap]-1)
                 mole.update(holes[chosenMap][moleHole])
                 isMoleHitted =False
@@ -241,9 +246,15 @@ def gameLoop():
                     victory = True
 
             if(pressedTime < 10):
+                if moleHitAnimation<30:
+                    moleHitAnimation+=1
+                    moleHit.draw(gameDisplay)
                 hammer_hit.draw(gameDisplay)
                 pressedTime +=1
             else:
+                if moleHitAnimation < 30:
+                    moleHitAnimation += 1
+                    moleHit.draw(gameDisplay)
                 hammer.draw(gameDisplay)
             pygame.display.update()
 
@@ -267,11 +278,17 @@ def gameLoop():
                         isGame = True
                         lives = 3
                         score = 0
-                    if returnToMenu:
+                        pressedTime = 10
+                        moleHitAnimation = 30
+                        victory = False
+                    elif returnToMenu:
                         gameOver = False
                         isMenu = True
                         lives = 3
                         score = 0
+                        pressedTime = 10
+                        moleHitAnimation = 30
+                        victory = False
             menuCursor.update(mousePosition)
             gameDisplay.fill(black)
             if victory:
