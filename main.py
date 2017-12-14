@@ -53,8 +53,8 @@ heart = pygame.image.load(os.path.join(imgFolder,"heart.png"))
 hitSound = pygame.mixer.Sound(os.path.join(musicFolder,"hit.wav"))
 swingSound = pygame.mixer.Sound(os.path.join(musicFolder,"swing.wav"))
 
-startGameButton = Buttons(140,75,330,272)
-optionButton = Buttons(140,75,330,365)
+startGameButton = Buttons(140,75,330,307)
+optionButton = Buttons(140,75,330,400)
 diffUpButton = Buttons(25,38,463,160)
 diffDownButton = Buttons(25,38,305,160)
 mapUpButton = Buttons(25,38,463,258)
@@ -308,8 +308,8 @@ def gameLoop():
                 gameDisplay.blit(winBackground.image, winBackground.rect)
             else:
                 gameDisplay.blit(loseBackground.image,loseBackground.rect)
+            screenMessage("Your score: {}".format(str(score)), red, 300, 200)
             menuCursor.draw(gameDisplay)
-            screenMessage("Your score: {}".format(str(score)),red,300,200)
             pygame.display.update()
 gameLoop()
 
