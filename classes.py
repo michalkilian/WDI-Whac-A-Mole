@@ -17,7 +17,7 @@ class Cursor(pygame.sprite.Sprite):
     def hit(self, target):
         return self.rect.colliderect(target)
     def update(self, position):
-        self.rect.center = position
+        self.rect.topleft = position
     def draw(self,screen):
         screen.blit(self.image, self.rect)
 

@@ -2,6 +2,8 @@ import  random
 from classes import *
 import os
 
+
+pygame.mixer.pre_init(44100, 16, 2, 4096)
 # Const variables
 width = 800
 height = 600
@@ -26,6 +28,7 @@ pygame.init()
 gameDisplay = pygame.display.set_mode((width,height))
 pygame.display.set_caption('Whac-A-Mole')
 pygame.mixer.init()
+pygame.mixer.music.set_volume(0.1)
 
 clock = pygame.time.Clock()
 font = pygame.font.SysFont(None, 40)
@@ -47,6 +50,9 @@ winBackground = Background(os.path.join(imgFolder,"gameWin.png"))
 loseBackground = Background(os.path.join(imgFolder,"gameLose.png"))
 heart = pygame.image.load(os.path.join(imgFolder,"heart.png"))
 
+hitSound = pygame.mixer.Sound(os.path.join(musicFolder,"hit.wav"))
+swingSound = pygame.mixer.Sound(os.path.join(musicFolder,"swing.wav"))
+
 startGameButton = Buttons(140,75,330,272)
 optionButton = Buttons(140,75,330,365)
 diffUpButton = Buttons(25,38,463,160)
@@ -56,6 +62,9 @@ mapDownButton = Buttons(25,38,305,258)
 backButton = Buttons(100,57,338,375)
 playAgainButton = Buttons(140,75,313,268)
 returnToMenuButton = Buttons(140,75,313,375)
+
+# buttons = pygame.sprite.Group()
+# buttons.add(playAgainButton,returnToMenuButton)
 
 
 #defining screen messages
@@ -116,8 +125,8 @@ def gameLoop():
                     mousePosition = pygame.mouse.get_pos()
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    clickStart = pygame.sprite.spritecollide(startGameButton,cursors,False)
-                    clickOptions = pygame.sprite.spritecollide(optionButton,cursors,False)
+                    clickStart = startGameButton.rect.collidepoint(mousePosition)
+                    clickOptions = optionButton.rect.collidepoint(mousePosition)
 
                     if clickStart:
                         isMenu = False
@@ -153,11 +162,11 @@ def gameLoop():
                     mousePosition = pygame.mouse.get_pos()
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    diffUp = pygame.sprite.spritecollide(diffUpButton,cursors,False)
-                    diffDown = pygame.sprite.spritecollide(diffDownButton,cursors,False)
-                    mapUp = pygame.sprite.spritecollide(mapUpButton,cursors,False)
-                    mapDown = pygame.sprite.spritecollide(mapDownButton,cursors,False)
-                    back = pygame.sprite.spritecollide(backButton,cursors,False)
+                    diffUp = diffUpButton.rect.collidepoint(mousePosition)
+                    diffDown = diffDownButton.rect.collidepoint(mousePosition)
+                    mapUp = mapUpButton.rect.collidepoint(mousePosition)
+                    mapDown = mapDownButton.rect.collidepoint(mousePosition)
+                    back = backButton.rect.collidepoint(mousePosition)
 
                     if diffUp and diff < 3:
                         diff +=1
@@ -211,11 +220,14 @@ def gameLoop():
                     pressedTime = 0
                     hit = pygame.sprite.spritecollide(mole,cursors,False)
                     if hit and moleTime<maxMoleTime:
+                        hitSound.play()
                         moleHit.update(holes[chosenMap][moleHole])
                         moleHitAnimation=0
                         score +=1
                         moleTime = maxMoleTime
                         isMoleHitted = True
+                    else:
+                        swingSound.play()
 
             hammer.update(mousePosition)
             hammer_hit.update(mousePosition)
@@ -244,6 +256,7 @@ def gameLoop():
                 isGame = False
                 if score == 25:
                     victory = True
+                cursors.update((0,0))
 
             if(pressedTime < 10):
                 if moleHitAnimation<30:
@@ -271,8 +284,8 @@ def gameLoop():
                 if event.type == pygame.MOUSEMOTION:
                     mousePosition = pygame.mouse.get_pos()
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    playAgain = pygame.sprite.spritecollide(playAgainButton,cursors,False)
-                    returnToMenu = pygame.sprite.spritecollide(returnToMenuButton,cursors,False)
+                    playAgain = playAgainButton.rect.collidepoint(mousePosition)
+                    returnToMenu = returnToMenuButton.rect.collidepoint(mousePosition)
                     if playAgain:
                         gameOver = False
                         isGame = True
